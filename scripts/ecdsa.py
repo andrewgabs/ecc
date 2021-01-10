@@ -184,7 +184,7 @@ def sign_message(private_key, message):
 
     while not r or not s:
         k = random.randrange(1, curve.n)
-        x, y = scalar_mult(k, curve.g)
+        x, _ = scalar_mult(k, curve.g)
 
         r = x % curve.n
         s = ((z + r * private_key) * inverse_mod(k, curve.n)) % curve.n
@@ -201,7 +201,7 @@ def verify_signature(public_key, message, signature):
     u1 = (z * w) % curve.n
     u2 = (r * w) % curve.n
 
-    x, y = point_add(scalar_mult(u1, curve.g),
+    x, _ = point_add(scalar_mult(u1, curve.g),
                      scalar_mult(u2, public_key))
 
     if (r % curve.n) == (x % curve.n):
