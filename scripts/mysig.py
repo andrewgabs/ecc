@@ -1,7 +1,7 @@
 import random
 
 N = 337
-G = 2477
+G = 24777
 Priv = 73
 Pub = Priv * G
 
@@ -23,7 +23,18 @@ def sign(z):
         koaf = random.randrange(1, N-1)
         print(f"K:{koaf}")
         r = koaf * G
-        s = (z + Priv * r) / koaf
+        s = (z + Priv * r) // koaf
+
+    assert s == z // koaf + Priv * G
+
+    assert s == (z + Priv * koaf * G) // koaf
+
+    assert s == z // koaf + Pub
+
+    assert s - Pub == z // koaf
+
+    assert koaf == z // ( s - Pub )
+
     return r, s
 
 
@@ -31,18 +42,28 @@ def ver(z, r, s):
     u1 = z / s
     u2 = r / s
     print(f"u1:{u1} u2:{u2}")
+    assert koaf == r // G
+
+    assert s - Pub == int(z * G / r)
+
+    ####
+
     P = int(u1 * G + u2 * Pub)
     print(f"P:{P}")
-    assert koaf == r / G, r/G
 
-    p1 = int(z * G / s + r * Priv * G / s)
+    p1 = int(z * G / s + r * Pub / s)
     assert P == p1, p1
 
-    p2 = int((z + r * Priv) / s * G)
-    assert P == p2, p2
+    p2 = (z + r * Priv) // s * G
+    assert abs(P - p2) <= 3, p2
+    assert r == (z + r * Priv) // s * G
+    assert r / G == (z + r * Priv) // s
+    assert r / G == (z + r * Priv) // (z // koaf + Pub)
 
-    p3 = int(koaf * G)
-    assert P == p3, p3
+    p3 = koaf * G
+    assert p2 == p3, p3
+
+    assert p2 == r
 
     return P
 
